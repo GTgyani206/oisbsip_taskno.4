@@ -1,4 +1,3 @@
-// Development: Node.js, Express.js, MongoDB, Mongoose, Passport.js, EJS, HTML, CSS, JavaScript
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -16,77 +15,63 @@ const userRoutes = require("./routes/users");
 const taskRoutes = require("./routes/tasks");
 const { isLoggedIn } = require("./middleware");
 
-// connect to MongoDB
-mongoose.connect("mongodb://localhost:27017/oisbsip_taskno", {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-});
+const dbUrl = process.env.ATLAS_URL;
 
-// check if the connection is successful
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "connection error:"));
-db.once("open", () => {
-  console.log("Database connected");
-});
+async () => {
+    await mongoose.connect(dbUrl);
+};
 
 // set up ejsMate
-app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-// set up express
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 
-// set up session
-const secret = process.env.SECRET ||
-    "thisshouldbeabettersecret!";
 const store = MongoStore.create({
-    mongoUrl: "mongodb://localhost:27017/oisbsip_taskno",
-    secret,
+    mongoUrl: dbUrl,
+    secret: process.env.SECRET,
     touchAfter: 24 * 3600,
-    });
+    crypto: {
+        secret: process.env.SECRET,
+    },
+});
+
+
 store.on("error", function (e) {
     console.log("Session Store Error", e);
 });
 
 const sessionConfig = {
-    store,
-    name: "session",
-    secret,
+    store: store,
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        // secure: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7,
     },
 };
 app.use(session(sessionConfig));
+app.use(flash());
 
 // set up passport
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
+
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// set up flash
-const flash = require("connect-flash");
-app.use(flash());
-
-// set up middleware to pass user to all
-// templates
 app.use((req, res, next) => {
-    res.locals.currentUser = req.user;
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
+    res.locals.currentUser = req.user;
     next();
 });
+
 
 // set up routes
 app.use("/", userRoutes);
@@ -94,22 +79,20 @@ app.use("/tasks", isLoggedIn, taskRoutes);
 
 // set up home route
 app.get("/", (req, res) => {
-    res.render("home");
+    res.send("Hi I am root route");
 });
 
 // set up 404 route
 app.all("*", (req, res, next) => {
-    res.status(404).send("Page not found");
+    next(new ExpressError("Page Not Found", 404));
 });
 
 // set up error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send("Something broke!");
+    let { statusCode = 500, message = "Something went wrong" } = err;   
+    res.status(statusCode).render("error", { message });
 });
 
-// set up port
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Serving on port ${port}`);
+app.listen(3000, () => {
+    console.log("Listening on port 3000");
 });
