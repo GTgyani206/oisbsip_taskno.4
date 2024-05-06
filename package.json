@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": "20.11.0"
+  },
   "name": "oisbsip_taskno.4",
   "version": "1.0.0",
   "description": "",
@@ -12,10 +15,13 @@
   "dependencies": {
     "connect-flash": "^0.1.1",
     "connect-mongo": "^5.1.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "ejs-mate": "^4.0.0",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
+    "joi": "^17.13.1",
     "method-override": "^3.0.0",
     "mongodb": "^6.6.0",
     "mongoose": "^8.3.3",
