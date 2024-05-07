@@ -1,5 +1,4 @@
 const User = require('../models/user');
-const Listing = require("../models/listing.js");
 module.exports.renderSignUpForm = (req, res) => {
   res.render("users/signup.ejs");
 };
@@ -13,8 +12,8 @@ module.exports.signup = async (req, res) => {
       if (err) {
         return next(err);
       }
-      req.flash('success', 'Welcome to Urban Trendz!');
-      res.redirect('/listings');
+      req.flash('success', "Welcome! You're now logged in");
+      res.redirect('/tasks');
     });
   } catch (e) {
     req.flash('error', e.message);
@@ -28,7 +27,7 @@ module.exports.renderLoginForm = (req, res) => {
 
 module.exports.login = async (req, res) => {
   req.flash("success", "Welcome back!");
-  res.redirect(res.locals.redirectURL || "/listings");
+  res.redirect(res.locals.redirectURL || "/task");
 };
 
 module.exports.logout = (req, res, next) => {
@@ -38,6 +37,6 @@ module.exports.logout = (req, res, next) => {
     }
 
     req.flash("success", "Logged out successfully!");
-    res.redirect("/listings");
+    res.redirect("/task");
   });
 };

@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const wrapAsync = require("../utils/wrapAsync");
-const listingController = require("../controllers/listing.js");
+const TaskController = require("../controllers/tasks");
 
-router.get("/", wrapAsync(listingController.index)); // Index route
-router.get("/:id", wrapAsync(listingController.showListing)); // Show route
+router.get("/", wrapAsync(TaskController.index)); // Index route
 
 module.exports = router;
