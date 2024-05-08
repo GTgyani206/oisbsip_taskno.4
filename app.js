@@ -19,25 +19,11 @@ const path = require("path");
 const userRouter = require("./routes/users");
 const taskRouter = require("./routes/tasks");
 
-// const dbUrl = process.env.ATLASDB_URL;
+const dbUrl = process.env.ATLASDB_URL;
 
-// async () => {
-//   await mongoose.connect(dbUrl);
-// };
-
-const MONGO_URL = "mongodb://127.0.0.1:27017/taskno4";
-
-main()
-  .then(() => {
-    console.log("connected to DB");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
-async function main() {
-  await mongoose.connect(MONGO_URL);
-}
+async () => {
+  await mongoose.connect(dbUrl);
+};
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -46,21 +32,21 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
-// const store = MongoStore.create({
-//   mongoUrl: dbUrl,
-//   secret: process.env.SECRET,
-//   touchAfter: 24 * 3600,
-//   crypto: {
-//     secret: process.env.SECRET,
-//   },
-// });
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  secret: process.env.SECRET,
+  touchAfter: 24 * 3600,
+  crypto: {
+    secret: process.env.SECRET,
+  },
+});
 
-// store.on("error", function (e) {
-//   console.log("Session Store Error", e);
-// });
+store.on("error", function (e) {
+  console.log("Session Store Error", e);
+});
 
 const sessionConfig = {
-  // store: store,
+  store: store,
   secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
