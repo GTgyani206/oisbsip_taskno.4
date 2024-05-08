@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">SafeSign</a>
+    <a class="navbar-brand" href="/tasks">SafeSign</a>
     <button
       class="navbar-toggler"
       type="button"
@@ -14,11 +14,17 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-link active" aria-current="page" href="#">Home</a>
-        <a class="nav-link" href="#"
-          ><i class="fa-solid fa-user-large"></i>Sign In</a
-        >
-        <a class="nav-link" href="#"
+        <a class="nav-link active" aria-current="page" href="/tasks">Home</a>
+        <% if(!currUser) {%>
+        <a class="btn Sign-in" href="/login">
+          <i class="fa-regular fa-user"></i> Sign in
+        </a>
+        <% } else { %>
+        <a class="btn Sign-in" href="/logout">
+          <i class="fa-regular fa-user"></i> Log Out
+        </a>
+        <% } %>
+        <a class="nav-link" href="/signup"
           ><i class="fa-solid fa-people-group"></i> Join
         </a>
       </div>
